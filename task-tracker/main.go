@@ -64,6 +64,7 @@ func main() {
 		task.CreatedAt = time.Now()
 		task.UpdatedAt = time.Now()
 		cmd.AddTask(task, FILE_NAME)
+		messages("Task added.")
 
 	case "list":
 		internal.PrintData(data)
@@ -95,10 +96,14 @@ func main() {
 				break
 			}
 		}
-
 		internal.SaveTasks(data, FILE_NAME)
+		messages("Task has been updated.")
 
 	case "delete":
+		if lessThanExpected(len(commands), 2) {
+			fmt.Println("Need to add an id")
+			return
+		}
 		n, err := strconv.Atoi(commands[1])
 		if err != nil {
 			fmt.Println("Error:", err)
@@ -111,18 +116,23 @@ func main() {
 			fmt.Print("Check your ID")
 			return
 		}
-		fmt.Println("Task deleted " + commands[1])
 		internal.SaveTasks(data, FILE_NAME)
-
+		messages("Task deleted " + commands[1])
 	case "done-task":
 		tasks := internal.FilterTask(data, DONE)
 		internal.PrintData(tasks)
+		messages("Task mark as done.")
 
-	case "undone-task":
-		tasks := internal.FilterTask(data, IN_PROGRESS)
-		internal.PrintData(tasks)
+	// case "undone-task":
+	// 	tasks := internal.FilterTask(data, IN_PROGRESS)
+	// 	internal.PrintData(tasks)
+	// 	messages("Task mark as undone.")
 
 	case "mark-done":
+		if lessThanExpected(len(commands), 2) {
+			fmt.Println("Need to add the ID of the task that has been done.")
+			return
+		}
 		n, err := strconv.Atoi(commands[1])
 		if err != nil {
 			fmt.Println("Error:", err)
@@ -136,8 +146,13 @@ func main() {
 		}
 
 		internal.SaveTasks(data, FILE_NAME)
+		messages("Tasked mark as Done")
 
 	case "mark-undone":
+		if lessThanExpected(len(commands), 2) {
+			fmt.Println("Need to add the ID of the unmark task")
+			return
+		}
 		n, err := strconv.Atoi(commands[1])
 		if err != nil {
 			fmt.Println("Error:", err)
@@ -146,7 +161,7 @@ func main() {
 
 		data, err := internal.Mark(uint16(n), data, IN_PROGRESS)
 		if err != nil {
-			fmt.Println("No task with that ID " + commands[1])
+			fmt.Println("No task with ID " + commands[1])
 			return
 		}
 
@@ -163,8 +178,33 @@ func main() {
 		internal.PrintData(task)
 
 	default:
-		fmt.Println("Nothing to do here.")
+		printHelp()
 
 	}
 
+}
+
+func printHelp() {
+	print := `
+	add <Your task here>
+	delete <ID>
+	update <ID>
+	list prints your
+	list-undone print your undone tasks
+	list-done prints your done tasks
+	`
+	fmt.Println("Commands:\n" + print)
+}
+
+// In case the arguments for the commands are less than expected
+func lessThanExpected(n int, atLeast int) bool {
+	if n < atLeast {
+		return true
+	}
+	return false
+}
+
+// Show messages after an action
+func messages(msg string) {
+	fmt.Println(msg)
 }
