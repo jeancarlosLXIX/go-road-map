@@ -1,12 +1,15 @@
-package storage
+package utils
 
-import "os"
+import (
+	// "fmt"
+	"os"
+)
 
-func fileExist(filePath string) error {
+func FileExist(filePath string) error {
 	_, err := os.Stat(filePath)
 
 	if os.IsNotExist(err) {
-		// create the file if not
+		// create the file
 		return os.WriteFile(filePath, []byte("[]"), 0644)
 	}
 

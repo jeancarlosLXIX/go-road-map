@@ -3,9 +3,9 @@ package models
 import "time"
 
 type Expense struct {
-	Id         int       `json:"id"`
+	ID         int       `json:"id"`
 	Name       string    `json:"name"`
-	CategoryId int       `json:"category_id"`
 	Total      float64   `json:"total"`
+	CategoryId int       `json:"category"`
 	CreatedAt  time.Time `json:"created_at"`
 }

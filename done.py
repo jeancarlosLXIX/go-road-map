@@ -2,7 +2,7 @@ import subprocess
 import sys
 
 if len(sys.argv) < 2:
-    print("\033[31mUsage: python git_commit.py <commit message> \033[0m")
+    print("\033[31mUsage: python done.py <commit message> \033[0m")
     sys.exit(1)
 
 message = " ".join(sys.argv[1:])
