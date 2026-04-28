@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"expense-tracker/internal/models"
 	"expense-tracker/internal/utils"
+	"fmt"
 	"slices"
 	"strings"
 
@@ -91,6 +92,89 @@ func (this *ExpenseStore) GetAnId() int {
 		}
 	}
 	return 0
+}
+
+// Functio that takes a expense and a value and update its value
+func (this *ExpenseStore) Update(expense string, amount float64) error {
+	var expenses []models.Expense
+
+	// Reading files
+	file, err := os.ReadFile(this.FilePath)
+
+	if err != nil {
+		return err
+	}
+
+	if err := json.Unmarshal(file, &expenses); err != nil {
+		return err
+	}
+
+	for i := range expenses {
+		if expenses[i].Name == expense {
+			expenses[i].Total += amount
+			break
+		}
+	}
+
+	// 4. Save back
+	data, err := json.MarshalIndent(expenses, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	return os.WriteFile(this.FilePath, data, 0644)
+
+}
+
+// Prints a sumary of your expenses
+func (this *ExpenseStore) Sumary() {
+	expenses, err := this.GetAll()
+	var total float64
+
+	if len(expenses) == 0 {
+		fmt.Println("No recorded data.")
+		return
+	}
+
+	if err != nil {
+		fmt.Println("An error has ocurred.")
+		return
+	}
+
+	for _, v := range expenses {
+		total += v.Total
+	}
+
+	fmt.Printf("Total expenses: $%.2f\n", total)
+}
+
+func (this *ExpenseStore) List() {
+	expenses, err := this.GetAll()
+	var total float64
+
+	if err != nil {
+		fmt.Println("There was an error")
+		return
+	}
+
+	if len(expenses) == 0 {
+		fmt.Println("There is not data to print")
+		return
+	}
+
+	fmt.Println("ID   Expense        Amount     Cat.")
+	for _, v := range expenses {
+		// 	- left align
+		// 5 width (5 characters)
+		fmt.Printf("%-4d %-15s %-10.2f %-5d\n",
+			v.ID,
+			v.Name,
+			v.Total,
+			v.CategoryId,
+		)
+		total += v.Total
+	}
+	fmt.Println("Total: ", total)
 }
 
 // listCmd.Flags().BoolVarP(&showCategories, "categories", "c", false, "Show categories instead of expenses")

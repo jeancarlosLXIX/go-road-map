@@ -8,6 +8,7 @@ import (
 	"expense-tracker/internal/storage"
 	"expense-tracker/internal/utils"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -37,7 +38,7 @@ add food -t 100
 		CategoryObj := storage.CategoryStore{FilePath: "categories.json"}
 		utils.DefaultCategory(CategoryObj.FilePath)
 
-		expName := args[0]
+		expName := strings.ToLower(args[0])
 		ExpenseObj := storage.ExpenseStore{FilePath: "expenses.json"}
 
 		if ExpenseObj.ExpenseExists(expName) {
